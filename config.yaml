@@ -1,0 +1,41 @@
+config:
+  backup: true
+  banner: true
+  create: true
+  dotpath: dotfiles
+  keepdot: false
+  link_dotfile_default: nolink
+  link_on_import: nolink
+  longkey: false
+dotfiles:
+  d_doom:
+    src: config/doom
+    dst: ~/.config/doom
+  d_joshuto:
+    src: config/joshuto
+    dst: ~/.config/joshuto
+  d_zsh:
+    src: zsh
+    dst: ~/.zsh
+  f_zshrc:
+    src: zshrc
+    dst: ~/.zshrc
+  d_kitty:
+    src: config/kitty
+    dst: ~/.config/kitty
+  d_skhd:
+    src: config/skhd
+    dst: ~/.config/skhd
+  d_yabai:
+    src: config/yabai
+    dst: ~/.config/yabai
+profiles:
+  yankuihaos-MacBook-Pro.local:
+    dotfiles:
+    - d_doom
+    - d_joshuto
+    - d_zsh
+    - f_zshrc
+    - d_kitty
+    - d_skhd
+    - d_yabai

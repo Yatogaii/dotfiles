@@ -1,0 +1,30 @@
+# bsp, stack or float
+yabai -m config layout bsp
+
+# space 9 and 10 is float
+yabai -m config --space 9 layout float
+yabai -m config --space 10 layout float
+yabai -m config --space 5 layout float
+
+yabai -m config window_placement second_child
+
+# padding
+yabai -m config top_padding 8
+yabai -m config bottom_padding 8
+yabai -m config left_padding 8
+yabai -m config right_padding 8
+yabai -m config window_gap 8
+
+# mouse settings
+yabai -m config mouse_follows_focus on
+
+yabai -m config mouse_modifier alt
+yabai -m config mouse_action1 move
+yabai -m config mouse_action2 resize
+yabai -m config mouse_drop_action swap
+
+# disable specific apps
+yabai -m rule --add app="^System Settings$" manage=off
+yabai -m rule --add app="^Calculator$" manage=off
+yabai -m rule --add app="^NeatDownloadManager$" manage=off
+
