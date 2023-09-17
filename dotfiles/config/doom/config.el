@@ -246,13 +246,68 @@
           ("CANCEL" .     (:background "gray" :foreground "black"))
           ))
 
-  ; rime config
+  ; START rime config
   (use-package! rime
     :custom
     (rime-librime-root "~/.config/emacs/librime/dist")
     (rime-emacs-module-header-root "/opt/homebrew/Cellar/emacs-plus@30/30.0.50/include")
-    (default-input-method "rime"))
+    (default-input-method "rime")
+    :bind
+    (:map rime-active-mode-map
+    ("<tab>" . 'rime-inline-ascii)))
   (setq rime-user-data-dir "~/Library/Rime")
+  ; emacs-rime with evil-escape
+  (defun rime-evil-escape-advice (orig-fun key)
+  "advice for `rime-input-method' to make it work together with `evil-escape'.
+        Mainly modified from `evil-escape-pre-command-hook'"
+  (if rime--preedit-overlay
+      ;; if `rime--preedit-overlay' is non-nil, then we are editing something, do not abort
+      (apply orig-fun (list key))
+    (when (featurep 'evil-escape)
+      (let (
+            (fkey (elt evil-escape-key-sequence 0))
+            (skey (elt evil-escape-key-sequence 1))
+            )
+        (if (or (char-equal key fkey)
+                (and evil-escape-unordered-key-sequence
+                     (char-equal key skey)))
+            (let ((evt (read-event nil nil evil-escape-delay)))
+              (cond
+               ((and (characterp evt)
+                     (or (and (char-equal key fkey) (char-equal evt skey))
+                         (and evil-escape-unordered-key-sequence
+                              (char-equal key skey) (char-equal evt fkey))))
+                (evil-repeat-stop)
+                (evil-normal-state))
+               ((null evt) (apply orig-fun (list key)))
+               (t
+                (apply orig-fun (list key))
+                (if (numberp evt)
+                    (apply orig-fun (list evt))
+                  (setq unread-command-events (append unread-command-events (list evt))))))
+              )
+          (apply orig-fun (list key)))))))
+  (advice-add 'rime-input-method :around #'rime-evil-escape-advice)
+  
+  ; bindkey to input and escape
+  (defun rime-commit1-and-evil-normal ()
+    "Commit the 1st item if exists, then go to evil normal state."
+    (interactive)
+    (rime-commit1)
+    (evil-normal-state))
+  (define-key rime-active-mode-map (kbd "s-k") 'rime-commit1-and-evil-normal)
+
+  ; 自动英文预测
+  (setq rime-disable-predicates
+      '(rime-predicate-evil-mode-p
+        rime-predicate-after-alphabet-char-p
+        rime-predicate-prog-in-code-p
+       ; rime-predicate-space-after-ascii-p ; 英文后带空格 
+        rime-predicate-space-after-cc-p 
+        rime-predicate-current-uppercase-letter-p 
+        rime-predicate-tex-math-or-command-p))
+
+  ; END emacs-rime
 
   ; suppress starting "look" process
   (advice-add 'ispell-lookup-words :around
