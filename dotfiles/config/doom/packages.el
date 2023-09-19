@@ -63,3 +63,10 @@
                   :repo "DogLooksGood/emacs-rime"
                   :files ("*.el" "Makefile" "lib.c")))
 (package! citar-org-roam)
+
+;(package! org-noter
+;             :recipe
+;             (:repo "org-noter/org-noter"
+;                    :host github
+;                    :type git
+;                    :files ("*.el" "modules/*.el")))

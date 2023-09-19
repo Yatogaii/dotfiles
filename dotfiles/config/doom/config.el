@@ -1,4 +1,4 @@
-;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
+;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
@@ -73,24 +73,57 @@
        :side right :width .33 :height .5 :ttl nil :modeline nil :quit nil :slot 1)
       ("^\\*org-roam: " ; node dedicated org-roam buffer
        :side right :width .33 :height .5 :ttl nil :modeline nil :quit nil :slot 2)))
-  (add-hook 'org-roam-mode-hook #'turn-on-visual-line-mode)
   (setq org-roam-capture-templates
-        '(("m" "main" plain
-           "%?"
-           :if-new (file+head "main/${slug}.org"
-                              "#+title: ${title}\n")
-           :immediate-finish t
-           :unnarrowed t)
-          ("r" "reference" plain "%?"
-           :if-new
-           (file+head "reference/${slug}.org" "#+title: ${title}\n")
-           :immediate-finish t
-           :unnarrowed t)
-          ("a" "article" plain "%?"
-           :if-new
-           (file+head "articles/${slug}.org" "#+title: ${title}\n#+filetags: :article:\n")
-           :immediate-finish t
-           :unnarrowed t)))
+      '(("a" "Academic")
+        ("av" "Virtualization" plain
+         "%?"
+         :if-new (file+head "Academic/Virtualization/${slug}.org"
+                            "#+title: ${title}\n")
+         :immediate-finish t
+         :unnarrowed t)
+        ("ab" "Basics" plain "%?"
+         :if-new
+         (file+head "Academic/Basics/${slug}.org" "#+title: ${title}\n")
+         :immediate-finish t
+         :unnarrowed t)
+        ("ap" "Papers" plain "%?"
+         :if-new
+         (file+head "Academic/Papers/${slug}.org" "#+title: ${title}\n")
+         :immediate-finish t
+         :unnarrowed nil) ; Papers 不被 Org Roam 管理
+        ("p" "Person")
+        ("ps" "School" plain "%?"
+         :if-new (file+head "Person/School/${slug}.org" "#+title: ${title}\n")
+         :immediate-finish t
+         :unnarrowed t)
+        ("pl" "Life" plain "%?"
+         :if-new (file+head "Person/Life/${slug}.org" "#+title: ${title}\n")
+         :immediate-finish t
+         :unnarrowed t)
+        ("pr" "Reading" plain "%?"
+         :if-new (file+head "Person/Reading/${slug}.org" "#+title: ${title}\n")
+         :immediate-finish t
+         :unnarrowed t)
+        ("w" "Work")
+        ("wn" "Notes" plain "%?"
+         :if-new (file+head "Work/Notes/${slug}.org" "#+title: ${title}\n")
+         :immediate-finish t
+         :unnarrowed nil) ; Notes 不被 Org Roam 管理
+        ("wt" "Todo" plain "%?"
+         :if-new (file+head "Work/Todo/${slug}.org" "#+title: ${title}\n")
+         :immediate-finish t
+         :unnarrowed nil) ; Todo 不被 Org Roam 管理
+        ("r" "Reference")
+        ("rt" "Tech" plain "%?"
+         :if-new (file+head "Reference/Tech/${slug}.org" "#+title: ${title}\n")
+         :immediate-finish t
+         :unnarrowed t)
+        ("rl" "Life" plain "%?"
+         :if-new (file+head "Reference/Life/${slug}.org" "#+title: ${title}\n")
+         :immediate-finish t
+         :unnarrowed t)))
+  (add-hook 'org-roam-mode-hook #'turn-on-visual-line-mode)
+
   (defun jethro/tag-new-node-as-draft ()
     (org-roam-tag-add '("draft")))
   (add-hook 'org-roam-capture-new-node-hook #'jethro/tag-new-node-as-draft)
@@ -295,7 +328,6 @@
     (interactive)
     (rime-commit1)
     (evil-normal-state))
-  (define-key rime-active-mode-map (kbd "s-k") 'rime-commit1-and-evil-normal)
 
   ; 自动英文预测
   (setq rime-disable-predicates
@@ -313,3 +345,5 @@
   (advice-add 'ispell-lookup-words :around
             (lambda (orig &rest args)
               (shut-up (apply orig args))))
+
+
