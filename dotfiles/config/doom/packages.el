@@ -70,3 +70,8 @@
 ;                    :host github
 ;                    :type git
 ;                    :files ("*.el" "modules/*.el")))
+
+(package! eaf :recipe (:host github
+                       :repo "manateelazycat/emacs-application-framework"
+                       :files ("*.el" "*.py" "app" "core")
+                       :build (:not compile)))

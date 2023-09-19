@@ -346,4 +346,20 @@
             (lambda (orig &rest args)
               (shut-up (apply orig args))))
 
+  ; EAF :: https://github.com/emacs-eaf/emacs-application-framework/issues/909
+(add-to-list 'load-path "~/.config/emacs/.local/straight/repos/emacs-application-framework/")
+
+  (use-package! eaf
+    :commands (eaf-open-browser eaf-open find-file)
+    :config
+      (require 'eaf-rss-reader)
+      (require 'eaf-terminal)
+      (require 'eaf-image-viewer)
+      (require 'eaf-pdf-viewer)
+      (require 'eaf-markdown-previewer)
+      (require 'eaf-file-browser)
+      (require 'eaf-file-manager)
+      (require 'eaf-video-player)
+      (require 'eaf-git)
+      (require 'eaf-system-monitor))
 
