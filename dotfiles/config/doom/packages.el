@@ -64,12 +64,19 @@
                   :files ("*.el" "Makefile" "lib.c")))
 (package! citar-org-roam)
 
-;(package! org-noter
-;             :recipe
-;             (:repo "org-noter/org-noter"
-;                    :host github
-;                    :type git
-;                    :files ("*.el" "modules/*.el")))
+;; org-noter-tools
+(package! org-noter
+             :recipe
+             (:repo "org-noter/org-noter"
+                    :host github
+                    :type git
+                    :files ("*.el" "modules/*.el")))
+(package! org-noter-tools
+  :recipe
+    (:repo "fuxialexander/org-pdftools"
+     :host github
+     :type git
+     :files ("*.el")))
 
 (package! eaf :recipe (:host github
                        :repo "manateelazycat/emacs-application-framework"

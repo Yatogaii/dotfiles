@@ -346,9 +346,10 @@
             (lambda (orig &rest args)
               (shut-up (apply orig args))))
 
-  ; EAF :: https://github.com/emacs-eaf/emacs-application-framework/issues/909
-(add-to-list 'load-path "~/.config/emacs/.local/straight/repos/emacs-application-framework/")
 
+  ; START EAF
+  ; EAF :: https://github.com/emacs-eaf/emacs-application-framework/issues/909
+  (add-to-list 'load-path "~/.config/emacs/.local/straight/repos/emacs-application-framework/")
   (use-package! eaf
     :commands 
       (eaf-open-browser
@@ -381,12 +382,17 @@
       (require 'eaf-git)
       (require 'eaf-system-monitor)
       (require 'eaf-interleave)
+      (require 'eaf-evil)
       ;; EAF interleave config
       (add-hook 'eaf-pdf-viewer-hook 'eaf-interleave-app-mode)
       (add-hook 'eaf-browser-hook 'eaf-interleave-app-mode)
       (add-hook 'org-mode-hook 'eaf-interleave-mode)
-      (setq eaf-interleave-org-notes-dir-list '("~/org/interleave/"))
+      (setq eaf-evil-leader-key "SPC")
+      (setq eaf-interleave-org-notes-dir-list '("~/Onedrive/Orgs/Interleaves"))
       (setq eaf-interleave-split-direction 'vertical)
       (setq eaf-interleave-disable-narrowing t)
       (setq eaf-interleave-split-lines 20))
+
+;; END OF EAF
+
 
