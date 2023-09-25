@@ -1,5 +1,4 @@
 ;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
-
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
 
@@ -40,7 +39,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-one)
+(setq doom-theme 'doom-bluloco-light)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -124,6 +123,15 @@
          :unnarrowed t)))
   (add-hook 'org-roam-mode-hook #'turn-on-visual-line-mode)
 
+  ;; Org-Roam node display setting
+  (cl-defmethod org-roam-node-hierarchy ((node org-roam-node))
+    (let ((level (org-roam-node-level node)))
+      (concat
+       (when (> level 0) (concat (org-roam-node-file-title node) " > "))
+       (when (> level 1) (concat (string-join (org-roam-node-olp node) " > ") " > "))
+       (org-roam-node-title node))))
+  (setq org-roam-node-display-template (concat "${type:15} ${hierarchy:*}" (propertize "${tags:10}" 'face 'org-tag)))
+
   (defun jethro/tag-new-node-as-draft ()
     (org-roam-tag-add '("draft")))
   (add-hook 'org-roam-capture-new-node-hook #'jethro/tag-new-node-as-draft)
@@ -135,8 +143,7 @@
           (file-name-directory
            (file-relative-name (org-roam-node-file node) org-roam-directory))))
       (error "")))
-  (setq org-roam-node-display-template
-        (concat "${type:15} ${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+
   (require 'citar)
   (defun jethro/org-roam-node-from-cite (keys-entries)
     (interactive (list (citar-select-ref :multiple nil :rebuild-cache t)))
@@ -287,7 +294,8 @@
     (default-input-method "rime")
     :bind
     (:map rime-active-mode-map
-    ("<tab>" . 'rime-inline-ascii)))
+    ;("<tab>" . 'rime-inline-ascii)))
+    ))
   (setq rime-user-data-dir "~/Library/Rime")
   ; emacs-rime with evil-escape
   (defun rime-evil-escape-advice (orig-fun key)
@@ -349,50 +357,48 @@
 
   ; START EAF
   ; EAF :: https://github.com/emacs-eaf/emacs-application-framework/issues/909
-  (add-to-list 'load-path "~/.config/emacs/.local/straight/repos/emacs-application-framework/")
-  (use-package! eaf
-    :commands 
-      (eaf-open-browser
-       eaf-open
-       find-file
-       eaf-interleave-open-notes-file
-       eaf-interleave-add-note
-       eaf-interleave-mode
-       eaf-interleave-sync-current-note)
-    :custom
-    (eaf-find-alternate-file-in-dired t)
-    :diminish eaf-mode
-    :bind (:map eaf-interleave-mode-map
-           ("M-." . 'eaf-interleave-sync-current-note)
-           ("M-p" . 'eaf-interleave-sync-previous-note)
-           ("M-n" . 'eaf-interleave-sync-next-note)
-           :map eaf-interleave-app-mode-map
-           ("C-c M-i" . 'eaf-interleave-add-note)
-           ("C-c M-o" . 'eaf-interleave-open-notes-file)
-           ("C-c M-q" . 'eaf-interleave-quit))
-    :config
-      (require 'eaf-rss-reader)
-      (require 'eaf-terminal)
-      (require 'eaf-image-viewer)
-      (require 'eaf-pdf-viewer)
-      (require 'eaf-markdown-previewer)
-      (require 'eaf-file-browser)
-      (require 'eaf-file-manager)
-      (require 'eaf-video-player)
-      (require 'eaf-git)
-      (require 'eaf-system-monitor)
-      (require 'eaf-interleave)
-      (require 'eaf-evil)
-      ;; EAF interleave config
-      (add-hook 'eaf-pdf-viewer-hook 'eaf-interleave-app-mode)
-      (add-hook 'eaf-browser-hook 'eaf-interleave-app-mode)
-      (add-hook 'org-mode-hook 'eaf-interleave-mode)
-      (setq eaf-evil-leader-key "SPC")
-      (setq eaf-interleave-org-notes-dir-list '("~/Onedrive/Orgs/Interleaves"))
-      (setq eaf-interleave-split-direction 'vertical)
-      (setq eaf-interleave-disable-narrowing t)
-      (setq eaf-interleave-split-lines 20))
-
+;  (add-to-list 'load-path "~/.config/emacs/.local/straight/repos/emacs-application-framework/")
+;  (use-package! eaf
+;    :commands 
+;      (eaf-open-browser
+;       eaf-open
+;       find-file
+;       eaf-interleave-open-notes-file
+;       eaf-interleave-add-note
+;       eaf-interleave-mode
+;       eaf-interleave-sync-current-note)
+;    :custom
+;    (eaf-find-alternate-file-in-dired t)
+;    :diminish eaf-mode
+;    :bind (:map eaf-interleave-mode-map
+;           ("M-." . 'eaf-interleave-sync-current-note)
+;           ("M-p" . 'eaf-interleave-sync-previous-note)
+;           ("M-n" . 'eaf-interleave-sync-next-note)
+;           :map eaf-interleave-app-mode-map
+;           ("C-c M-i" . 'eaf-interleave-add-note)
+;           ("C-c M-o" . 'eaf-interleave-open-notes-file)
+;           ("C-c M-q" . 'eaf-interleave-quit))
+;    :config
+;      (require 'eaf-rss-reader)
+;      (require 'eaf-terminal)
+;      (require 'eaf-image-viewer)
+;      (require 'eaf-pdf-viewer)
+;      (require 'eaf-markdown-previewer)
+;      (require 'eaf-file-browser)
+;      (require 'eaf-file-manager)
+;      (require 'eaf-video-player)
+;      (require 'eaf-git)
+;      (require 'eaf-system-monitor)
+;      (require 'eaf-interleave)
+;      ;; EAF interleave config
+;      (add-hook 'eaf-pdf-viewer-hook 'eaf-interleave-app-mode)
+;      (add-hook 'eaf-browser-hook 'eaf-interleave-app-mode)
+;      (add-hook 'org-mode-hook 'eaf-interleave-mode)
+;      (setq eaf-interleave-org-notes-dir-list '("~/Onedrive/Orgs/Interleaves"))
+;      (setq eaf-interleave-split-direction 'vertical)
+;      (setq eaf-interleave-disable-narrowing t)
+;      (setq eaf-interleave-split-lines 20))
+;
 ;; END OF EAF
 
 

@@ -77,6 +77,7 @@
      :host github
      :type git
      :files ("*.el")))
+(package! djvu)
 
 (package! eaf :recipe (:host github
                        :repo "manateelazycat/emacs-application-framework"
