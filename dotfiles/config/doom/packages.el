@@ -79,7 +79,3 @@
      :files ("*.el")))
 (package! djvu)
 
-(package! eaf :recipe (:host github
-                       :repo "manateelazycat/emacs-application-framework"
-                       :files ("*.el" "*.py" "app" "core")
-                       :build (:not compile)))
