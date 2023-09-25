@@ -79,3 +79,4 @@
      :files ("*.el")))
 (package! djvu)
 
+(package! corfu)
