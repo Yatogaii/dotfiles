@@ -80,3 +80,10 @@
 (package! djvu)
 
 (package! corfu)
+
+(package! codeium :recipe (:host github :repo "Exafunction/codeium.el"))
+
+;; Optionally use the `orderless' completion style.
+(package! orderless)
+
+(package! cape)
