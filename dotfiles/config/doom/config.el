@@ -39,7 +39,8 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-bluloco-light)
+;; (setq doom-theme 'modus-vivendi-tritanopia)
+(setq doom-theme 'doom-tomorrow-night)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -60,12 +61,15 @@
         :desc "org-roam-ref-find" "r" #'org-roam-ref-find
         :desc "org-roam-show-graph" "g" #'org-roam-show-graph
         :desc "jethro/org-capture-slipbox" "<tab>" #'jethro/org-capture-slipbox
-        :desc "org-roam-capture" "c" #'org-roam-capture)
-  (setq org-roam-directory (file-truename "~/OneDrive/Orgs/Roam/")
-        org-roam-database-connector 'sqlite-builtin
-        org-roam-db-gc-threshold most-positive-fixnum
-        org-id-link-to-org-use-id t)
+        :desc "org-roam-capture" "c" #'org-roam-capture
+        :desc "org-id-get-create" "z" #'org-id-get-create)
   :config
+  (setq org-roam-directory (file-truename "~/OneDrive/Orgs/Roam/")
+	org-roam-database-connector 'sqlite-builtin
+	org-roam-db-gc-threshold most-positive-fixnum)
+  (with-eval-after-load 'org-id
+    (setq org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id))
+
   (org-roam-db-autosync-mode +1)
   (set-popup-rules!
     `((,(regexp-quote org-roam-buffer) ; persistent org-roam buffer
@@ -73,52 +77,25 @@
       ("^\\*org-roam: " ; node dedicated org-roam buffer
        :side right :width .33 :height .5 :ttl nil :modeline nil :quit nil :slot 2)))
   (setq org-roam-capture-templates
-      '(("a" "Academic")
-        ("av" "Virtualization" plain
+      '(("m" "main" plain
          "%?"
-         :if-new (file+head "Academic/Virtualization/${slug}.org"
+         :if-new (file+head "main/${slug}.org"
                             "#+title: ${title}\n")
          :immediate-finish t
          :unnarrowed t)
-        ("ab" "Basics" plain "%?"
+        ("r" "reference" plain "%?"
          :if-new
-         (file+head "Academic/Basics/${slug}.org" "#+title: ${title}\n")
+         (file+head "reference/${title}.org" "#+title: ${title}\n")
          :immediate-finish t
          :unnarrowed t)
-        ("ap" "Papers" plain "%?"
+        ("n" "no-org-roam" plain "%?"
          :if-new
-         (file+head "Academic/Papers/${slug}.org" "#+title: ${title}\n")
-         :immediate-finish t
-         :unnarrowed nil) ; Papers 不被 Org Roam 管理
-        ("p" "Person")
-        ("ps" "School" plain "%?"
-         :if-new (file+head "Person/School/${slug}.org" "#+title: ${title}\n")
+         (file+head "../no-roam/${title}.org" "#+title: ${title}\n")
          :immediate-finish t
          :unnarrowed t)
-        ("pl" "Life" plain "%?"
-         :if-new (file+head "Person/Life/${slug}.org" "#+title: ${title}\n")
-         :immediate-finish t
-         :unnarrowed t)
-        ("pr" "Reading" plain "%?"
-         :if-new (file+head "Person/Reading/${slug}.org" "#+title: ${title}\n")
-         :immediate-finish t
-         :unnarrowed t)
-        ("w" "Work")
-        ("wn" "Notes" plain "%?"
-         :if-new (file+head "Work/Notes/${slug}.org" "#+title: ${title}\n")
-         :immediate-finish t
-         :unnarrowed nil) ; Notes 不被 Org Roam 管理
-        ("wt" "Todo" plain "%?"
-         :if-new (file+head "Work/Todo/${slug}.org" "#+title: ${title}\n")
-         :immediate-finish t
-         :unnarrowed nil) ; Todo 不被 Org Roam 管理
-        ("r" "Reference")
-        ("rt" "Tech" plain "%?"
-         :if-new (file+head "Reference/Tech/${slug}.org" "#+title: ${title}\n")
-         :immediate-finish t
-         :unnarrowed t)
-        ("rl" "Life" plain "%?"
-         :if-new (file+head "Reference/Life/${slug}.org" "#+title: ${title}\n")
+        ("a" "article" plain "%?"
+         :if-new
+         (file+head "articles/${title}.org" "#+title: ${title}\n#+filetags: :article:\n")
          :immediate-finish t
          :unnarrowed t)))
   (add-hook 'org-roam-mode-hook #'turn-on-visual-line-mode)
@@ -161,7 +138,15 @@
                          :info (list :citekey (car keys-entries))
                          :node (org-roam-node-create :title title)
                          :props '(:finalize find-file)))))
+;; End of org-roam
 
+;; Start of Citar
+
+(use-package! citar
+  :custom
+  (citar-bibliography '("~/OneDrive/Orgs/虚拟化安全.bib")))
+
+;; End of citar
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
@@ -362,11 +347,11 @@
   (corfu-auto t)                 ;; Enable auto completion
   (corfu-separator ?\s)          ;; Orderless field separator
   (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
-  (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
-  (corfu-preview-current nil)    ;; Disable current candidate preview
+  (corfu-quit-no-match t)      ;; Never quit, even if there is no match
+;  (corfu-preview-current nil)    ;; Disable current candidate preview
   (corfu-preselect 'prompt)      ;; Preselect the prompt
-  (corfu-on-exact-match nil)     ;; Configure handling of exact matches
-  (corfu-scroll-margin 5)        ;; Use scroll margin
+;  (corfu-on-exact-match nil)     ;; Configure handling of exact matches
+;  (corfu-scroll-margin 5)        ;; Use scroll margin
 
   ;; Enable Corfu only for certain modes.
   :hook ((prog-mode . corfu-mode)
@@ -378,10 +363,11 @@
   ;; See also `global-corfu-modes'.
   :init
   (global-corfu-mode))
- 
-  ;; better corfu experience
+
+;; better corfu experience
 (setq completion-cycle-threshold 3)
 (setq tab-always-indent 'complete)
+
 ;; CORFU End
 
 ;; Optionally use the `orderless' completion style.
@@ -403,17 +389,17 @@
 
     :init
     ;; use globally
-;;    (add-to-list 'completion-at-point-functions #'codeium-completion-at-point)
+    ;;(add-to-list 'completion-at-point-functions #'codeium-completion-at-point)
     ;; or on a hook
     ;; (add-hook 'python-mode-hook
     ;;     (lambda ()
     ;;         (setq-local completion-at-point-functions '(codeium-completion-at-point))))
 
     ;; if you want multiple completion backends, use cape (https://github.com/minad/cape):
-    ;; (add-hook 'python-mode-hook
-    ;;     (lambda ()
-    ;;         (setq-local completion-at-point-functions
-    ;;             (list (cape-super-capf #'codeium-completion-at-point #'lsp-completion-at-point)))))
+    ;;(add-hook 'python-mode-hook
+    ;;    (lambda ()
+    ;;        (setq-local completion-at-point-functions
+    ;;            (list (cape-super-capf #'codeium-completion-at-point #'lsp-completion-at-point)))))
     ;; an async company-backend is coming soon!
 
     ;; codeium-completion-at-point is autoloaded, but you can
@@ -482,7 +468,7 @@
   ;; Add to the global default value of `completion-at-point-functions' which is
   ;; used by `completion-at-point'.  The order of the functions matters, the
   ;; first function returning a result wins.  Note that the list of buffer-local
-  ;; completion functions takes precedence over the global list.
+  ;; completion funcons takes precedence over the global list.
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-elisp-block)
@@ -496,3 +482,67 @@
   ;;(add-to-list 'completion-at-point-functions #'cape-elisp-symbol)
   ;;(add-to-list 'completion-at-point-functions #'cape-line)
 )
+
+;; Start LSP
+;; 配置 lsp-mode
+;(load! "modules/completions/eglot.el")
+;; End LSP
+
+;; tab bar
+;(load! "modules/ui/tabbar.el")
+
+;; org-journal
+(load! "modules/org/org-journal.el")
+
+;; Start Lsp-bridge
+;(require 'lsp-bridge)
+;(use-package! lsp-bridge
+;  :config
+;  (map! :map acm-mode-map
+;        [tab]           #'acm-select-next
+;        [backtab]       #'acm-select-prev)
+;  (map! :map doom-leader-code-map
+;        :desc "LSP Rename"
+;        "r"             #'lsp-bridge-rename
+;        :desc "LSP Find declaration"
+;        "j"             #'lsp-bridge-find-def)
+;  (require 'yasnippet)
+;  (yas-global-mode 1)
+;  (global-lsp-bridge-mode))
+;; End Lsp-bridge
+
+;; Tramp
+(setq tramp-default-method "sshx")
+(setq projectile-mode-line "Projectile")
+(setq remote-file-name-inhibit-cache nil)
+(setq vc-ignore-dir-regexp
+      (format "%s\\|%s"
+                    vc-ignore-dir-regexp
+                    tramp-file-name-regexp))
+(setq tramp-verbose 1)
+;; End of Tramp
+
+;; org-mode 插入粘贴板上的图片
+  (defun org-insert-image ()
+    "Insert an image from clipboard into a folder named after the current Org file."
+    (interactive)
+    (let* ((org-file-buffer (buffer-name))
+           (org-file-name (file-name-base org-file-buffer)) ; 获取当前Org文件的文件名
+           (path (concat default-directory org-file-name "/")) ; 创建与Org文件同名的文件夹
+           (image-file (concat
+                        path
+                        (format-time-string "%Y%m%d_%H%M%S.png"))))
+      (if (not (file-exists-p path))
+          (make-directory path t)) ; 如果文件夹不存在，创建它
+      (do-applescript (concat
+                       "set the_path to \"" image-file "\" \n"
+                       "set png_data to the clipboard as «class PNGf» \n"
+                       "set the_file to open for access (POSIX file the_path as string) with write permission \n"
+                       "write png_data to the_file \n"
+                       "close access the_file"))
+      (org-insert-link nil
+                       (concat "file:" image-file)
+                       "")
+      (message image-file))
+    (org-display-inline-images))
+

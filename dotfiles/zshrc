@@ -46,10 +46,13 @@ export MANPATH="/opt/homebrew/opt/file-formula/share/man/man1:$MANPATH"
 
 # jdk
 export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
+# local bin
+export PATH="$PATH:/Users/yankuihao/.local/bin"
 
 # set android emulator
 alias kAndroidEmulator="/opt/homebrew/share/android-commandlinetools/emulator/emulator -avd m1android"
 alias icat="kitty +kitten icat"
+alias kssh="kitty +kitten ssh"
 
 # doom sync
 alias doom="~/.config/emacs/bin/doom"
@@ -57,3 +60,9 @@ alias doom="~/.config/emacs/bin/doom"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
+# flutter
+export PUB_HOSTED_URL=https://pub.flutter-io.cn
+export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
+export CHROME_EXECUTABLE="/Applications/Chromium.app/Contents/MacOS/Chromium"
+
+alias pemacs="https_proxy=http://127.0.0.1:7890 http_proxy=http://127.0.0.1:7890 emacs -nw"

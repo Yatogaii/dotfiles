@@ -87,3 +87,12 @@
 (package! orderless)
 
 (package! cape)
+
+(package! org-journal)
+
+;; lsp-bridge
+;(package! lsp-bridge
+;  :recipe (:host github :repo "manateelazycat/lsp-bridge" :branch "master"
+;           :files ("*")))
+;(package! lsp-mode :disable t :ignore t)
+;(package! company :disable t :ignore t)
