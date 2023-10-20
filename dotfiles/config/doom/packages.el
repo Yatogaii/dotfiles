@@ -87,6 +87,7 @@
 (package! orderless)
 
 (package! cape)
+(package! kind-icon)
 
 (package! org-journal)
 

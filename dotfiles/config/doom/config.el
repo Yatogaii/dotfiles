@@ -340,45 +340,80 @@
               (shut-up (apply orig args))))
 
 ;; CORFU Start
-(use-package! corfu
-  ;; Optional customizations
+
+(use-package! yasnippet
+  :diminish yas-minor-mode
+  :custom (yas-keymap-disable-hook
+           (lambda () (and (frame-live-p corfu--frame)
+                           (frame-visible-p corfu--frame))))
+  :hook (after-init . yas-global-mode))
+
+;(use-package! corfu
+;  :custom
+;  (corfu-cycle t)
+;  (corfu-auto t)
+;  (corfu-auto-prefix 1)
+;  (corfu-auto-delay 0.1)
+;  (corfu-preselect 'prompt)
+;  (corfu-on-exact-match nil)
+;  :bind (:map corfu-map
+;              ([tab] . corfu-next)
+;              ([backtab] . corfu-previous)
+;              ("s-<return>" . corfu-insert)
+;              ([remap move-end-of-line] . nil))
+;  :hook (eshell-mode . (lambda () (setq-local corfu-auto nil)))
+;  :init  
+;  (setq corfu-global-mode t)          ;; Move this line here
+;  (setq corfu-popupinfo-mode t))
+
+(use-package! kind-icon
+  :after corfu
   :custom
-  (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
-  (corfu-auto t)                 ;; Enable auto completion
-  (corfu-separator ?\s)          ;; Orderless field separator
-  (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
-  (corfu-quit-no-match t)      ;; Never quit, even if there is no match
-;  (corfu-preview-current nil)    ;; Disable current candidate preview
-  (corfu-preselect 'prompt)      ;; Preselect the prompt
-;  (corfu-on-exact-match nil)     ;; Configure handling of exact matches
-;  (corfu-scroll-margin 5)        ;; Use scroll margin
+  (kind-icon-default-face 'corfu-default)
+  :config
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter)
+  (when (eq system-type 'windows-nt)
+    (plist-put kind-icon-default-style :height 0.8))
+  (when (fboundp 'reapply-themes)
+    (advice-add 'reapply-themes :after 'kind-icon-reset-cache)))
 
-  ;; Enable Corfu only for certain modes.
-  :hook ((prog-mode . corfu-mode)
-         (shell-mode . corfu-mode)
-         (eshell-mode . corfu-mode))
+(use-package! corfu
+   :after orderless
+   :custom
+   (corfu-quit-at-boundary nil)
+   (corfu-quit-no-match t)
+   (corfu-cycle t)
+   (corfu-auto t)
+ :bind (:map corfu-map
+             ([tab] . corfu-next)
+             ([backtab] . corfu-previous)
+             ("s-<return>" . corfu-insert)
+             ([remap move-end-of-line] . nil))
+ :hook (eshell-mode . (lambda () (setq-local corfu-auto nil)))
+   :init
+   (global-corfu-mode))
 
-  ;; Recommended: Enable Corfu globally.
-  ;; This is recommended since Dabbrev can be used globally (M-/).
-  ;; See also `global-corfu-modes'.
-  :init
-  (global-corfu-mode))
 
-;; better corfu experience
-(setq completion-cycle-threshold 3)
-(setq tab-always-indent 'complete)
-
-;; CORFU End
-
-;; Optionally use the `orderless' completion style.
 (use-package! orderless
   :init
-  ;; Configure a custom style dispatcher (see the Consult wiki)
-  ;; (setq orderless-style-dispatchers '(+orderless-dispatch)
-  ;;       orderless-component-separator #'orderless-escapable-split-on-space)
   (setq completion-styles '(orderless basic)
         completion-category-defaults nil
-        completion-category-overrides '((file (styles partial-completion)))))
+        completion-category-overrides '((file (styles . (partial-completion)))))
+  :config
+  ;; Fix completing hostnames when using /ssh:
+  (setq completion-styles '(orderless)))
+
+(use-package! lsp-mode
+  :custom
+  (lsp-completion-provider :none) ;; we use Corfu!
+  :init
+  (defun my/lsp-mode-setup-completion ()
+    (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
+          '(orderless))) ;; Configure orderless
+  :hook
+  (lsp-completion-mode . my/lsp-mode-setup-completion))
+
+;; CORFU End
 
 ;; Codeium
 ;; we recommend using use-package to organize your init.el
@@ -474,11 +509,11 @@
   (add-to-list 'completion-at-point-functions #'cape-elisp-block)
   ;;(add-to-list 'completion-at-point-functions #'cape-history)
   ;;(add-to-list 'completion-at-point-functions #'cape-keyword)
-  ;;(add-to-list 'completion-at-point-functions #'cape-tex)
+  (add-to-list 'completion-at-point-functions #'cape-tex)
   ;;(add-to-list 'completion-at-point-functions #'cape-sgml)
   ;;(add-to-list 'completion-at-point-functions #'cape-rfc1345)
   ;;(add-to-list 'completion-at-point-functions #'cape-abbrev)
-  ;;(add-to-list 'completion-at-point-functions #'cape-dict)
+  (add-to-list 'completion-at-point-functions #'cape-dict)
   ;;(add-to-list 'completion-at-point-functions #'cape-elisp-symbol)
   ;;(add-to-list 'completion-at-point-functions #'cape-line)
 )
