@@ -127,6 +127,8 @@
        ;;crystal           ; ruby at the speed of c
        ;;csharp            ; unity, .NET, and mono shenanigans
        data              ; config/data formats
+       (latex +cdlatex
+              +fold)
 
        ;;(;emms
        :app

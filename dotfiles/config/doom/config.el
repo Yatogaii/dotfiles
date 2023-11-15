@@ -529,6 +529,9 @@
 ;; org-journal
 (load! "modules/org/org-journal.el")
 
+;; acutex and pdf-tools
+(load! "modules/latex/latex.el")
+
 ;; Start Lsp-bridge
 ;(require 'lsp-bridge)
 ;(use-package! lsp-bridge
