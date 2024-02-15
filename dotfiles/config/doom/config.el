@@ -2,54 +2,48 @@
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
 
+;; set some CONSTANT dir
+(setq yt-org-base-dir "~/OneDrive-Personal/Orgs")
+(setq yt-rime-base-dir "~/OneDrive—Personal")
+(setq rime-user-data-dir "~/OneDrive-Personal/RimeConfig/rime-settings")
+
+
 ;; CN mirrors
 (setq package-archives '(("gnu"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
                          ("org-cn". "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
                          ("melpa" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")))
 
-;; Some functionality uses this to identify you, e.g. GPG configuration, email
-;; clients, file templates and snippets. It is optional.
-;; (setq user-full-name "John Doe"
-;;       user-mail-address "john@doe.com")
 
-;; Doom exposes five (optional) variables for controlling fonts in Doom:
-;;
-;; - `doom-font' -- the primary font to use
-;; - `doom-variable-pitch-font' -- a non-monospace font (where applicable)
-;; - `doom-big-font' -- used for `doom-big-font-mode'; use this for
-;;   presentations or streaming.
-;; - `doom-unicode-font' -- for unicode glyphs
-;; - `doom-serif-font' -- for the `fixed-pitch-serif' face
-;;
-;; See 'C-h v doom-font' for documentation and more examples of what they
-;; accept. For example:
-;;
-;;(setq doom-font (font-spec :family "FiraCode Nerd Font" :size 16 :weight 'semi-light)
-;;      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13))
-  (setq doom-font (font-spec :family "FiraCode Nerd Font" :size 16 :weight 'normal :width 'normal)
-        doom-unicode-font (font-spec :family "LXGW WenKai" :size 16))
-;  (setq doom-font (font-spec :family "LXGW WenKai Mono" :size 16 :weight 'normal :width 'normal))
+;; font setting
+;;(setq doom-font (font-spec :family "FiraCode Nerd Font" :weight 'medium :size 13.0))
+(setq doom-font (font-spec :family "Source Code Pro" :weight 'medium :size 14.0))
 
-;;
-;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
-;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
-;; refresh your font settings. If Emacs still can't find your font, it likely
-;; wasn't installed correctly. Font issues are rarely Doom issues!
+;;(setq doom-font (font-spec :family "0xProto Nerd Font" :weight 'medium :size 14.0))
 
-;; There are two ways to load a theme. Both assume the theme is installed and
-;; available. You can either set `doom-theme' or manually load a theme with the
-;; `load-theme' function. This is the default:
-;; (setq doom-theme 'modus-vivendi-tritanopia)
-(setq doom-theme 'doom-tomorrow-night)
+(defun my-cjk-font()
+  (dolist (charset '(kana han cjk-misc symbol bopomofo))
+    (set-fontset-font t charset (font-spec :family "LXGW WenKai Mono"))))
 
-;; This determines the style of line numbers in effect. If set to `nil', line
-;; numbers are disabled. For relative line numbers, set this to `relative'.
+(add-hook 'after-setting-font-hook #'my-cjk-font)
+
+;; 解决粘贴中文出现乱码的问题
+(if (eq system-type 'windows-nt)
+	(progn
+	  ;; (setq selection-coding-system 'utf-16le-dos) ;; 修复从网页剪切文本过来时显示 \nnn \nnn 的问题
+	  ;; (set-default selection-coding-system 'utf-16le-dos)
+	  (set-selection-coding-system 'utf-16le-dos) ;; 别名set-clipboard-coding-system
+	  )
+  (set-selection-coding-system 'utf-8))
+
+
+;(setq doom-theme 'doom-tomorrow-night)
+(setq doom-theme 'nil)
+
 (setq display-line-numbers-type t)
 
-;; org and org-roam directory
-;; If you use `org' and don't want your org files in the default location below,
-;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/OneDrive/Orgs/")
+(setq org-directory yt-org-base-dir)
+
+;(use-package! emacsql-sqlite-builtin)
 
 (use-package! org-roam
   :init
@@ -64,8 +58,9 @@
         :desc "org-roam-capture" "c" #'org-roam-capture
         :desc "org-id-get-create" "z" #'org-id-get-create)
   :config
-  (setq org-roam-directory (file-truename "~/OneDrive/Orgs/Roam/")
-	org-roam-database-connector 'sqlite-builtin
+  (setq org-roam-directory (file-truename yt-org-base-dir)
+;	org-roam-database-connector 'sqlite-builtin
+;	org-roam-database-connector 'sqlite-builtin
 	org-roam-db-gc-threshold most-positive-fixnum)
   (with-eval-after-load 'org-id
     (setq org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id))
@@ -90,7 +85,7 @@
          :unnarrowed t)
         ("n" "no-org-roam" plain "%?"
          :if-new
-         (file+head "../no-roam/${title}.org" "#+title: ${title}\n")
+         (file+head "no-roam/${title}.org" "#+title: ${title}\n")
          :immediate-finish t
          :unnarrowed t)
         ("a" "article" plain "%?"
@@ -144,44 +139,14 @@
 
 (use-package! citar
   :custom
-  (citar-bibliography '("~/OneDrive/Orgs/虚拟化安全.bib")))
+  (citar-bibliography '(concat yt-org-base-dir "/虚拟化安全.bib")))
 
 ;; End of citar
 
-;; Whenever you reconfigure a package, make sure to wrap your config in an
-;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
-;;
-;;   (after! PACKAGE
-;;     (setq x y))
-;;
-;; The exceptions to this rule:
-;;
-;;   - Setting file/directory variables (like `org-directory')
-;;   - Setting variables which explicitly tell you to set them before their
-;;     package is loaded (see 'C-h v VARIABLE' to look up their documentation).
-;;   - Setting doom variables (which start with 'doom-' or '+').
-;;
-;; Here are some additional functions/macros that will help you configure Doom.
-;;
-;; - `load!' for loading external *.el files relative to this one
-;; - `use-package!' for configuring packages
-;; - `after!' for running code after a package has loaded
-;; - `add-load-path!' for adding directories to the `load-path', relative to
-;;   this file. Emacs searches the `load-path' when you load packages with
-;;   `require' or `use-package'.
-;; - `map!' for binding new keys
-;;
-;; To get information about any of these functions/macros, move the cursor over
-;; the highlighted symbol at press 'K' (non-evil users must press 'C-c c k').
-;; This will open documentation for it, including demos of how they are used.
-;; Alternatively, use `C-h o' to look up a symbol (functions, variables, faces,
-;; etc).
-;;
-;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
-;; they are implemented.
 
 ; auto indented
 (setq org-startup-indented t)
+(setq org-odd-levels-only nil)
 
 ; map jk to esc
 (setq-default evil-escape-key-sequence "jk")
@@ -237,28 +202,31 @@
   )
 
   ;org-mode 插入粘贴板上的图片
-  (defun org-insert-image ()
-    "Insert an image from clipboard into a folder named after the current Org file."
-    (interactive)
-    (let* ((org-file-buffer (buffer-name))
-           (org-file-name (file-name-base org-file-buffer)) ; 获取当前Org文件的文件名
-           (path (concat default-directory org-file-name "/")) ; 创建与Org文件同名的文件夹
-           (image-file (concat
-                        path
-                        (format-time-string "%Y%m%d_%H%M%S.png"))))
-      (if (not (file-exists-p path))
-          (make-directory path t)) ; 如果文件夹不存在，创建它
-      (do-applescript (concat
-                       "set the_path to \"" image-file "\" \n"
-                       "set png_data to the clipboard as «class PNGf» \n"
-                       "set the_file to open for access (POSIX file the_path as string) with write permission \n"
-                       "write png_data to the_file \n"
-                       "close access the_file"))
-      (org-insert-link nil
-                       (concat "file:" image-file)
-                       "")
-      (message image-file))
-    (org-display-inline-images))
+(defun yt/org-insert-image ()
+  "Insert an image from clipboard into a folder named after the current Org file with BEGIN_IMAGE and END_IMAGE tags."
+  (interactive)
+  (let* ((org-file-buffer (buffer-name))
+         (org-file-name (file-name-base org-file-buffer)) ; 获取当前 Org 文件的文件名
+         (path (concat default-directory org-file-name "\\")) ; 创建与 Org 文件同名的文件夹
+         (image-file (concat
+                      path
+                      (format-time-string "%Y%m%d_%H%M%S.png"))))
+    (if (not (file-exists-p path))
+        (make-directory path t)) ; 如果文件夹不存在，创建它
+    (shell-command-to-string (concat "powershell.exe -command \""
+                                     "$img = Get-Clipboard -Format Image; "
+                                     "$img.Save('" image-file "');\""))
+    ;; 插入 BEGIN_IMAGE 标记
+    (insert "#+BEGIN_IMAGE\n")
+    ;; 插入图片链接
+    (org-insert-link nil
+                     (concat "file:" image-file)
+                     "")
+    ;; 插入 END_IMAGE 标记
+    (insert "\n#+END_IMAGE\n")
+    (message image-file)
+    (org-display-inline-images)))
+
 
   ; TODO keywords
   (setq org-todo-keywords
@@ -274,14 +242,14 @@
   ; START rime config
   (use-package! rime
     :custom
-    (rime-librime-root "~/.config/emacs/librime/dist")
-    (rime-emacs-module-header-root "/opt/homebrew/Cellar/emacs-plus@30/30.0.50/include")
+   ; Linux dont need extra config
+   ; (rime-librime-root "~/.config/emacs/librime/dist")
+   ; (rime-emacs-module-header-root "/opt/homebrew/Cellar/emacs-plus@30/30.0.50/include")
     (default-input-method "rime")
     :bind
     (:map rime-active-mode-map
     ;("<tab>" . 'rime-inline-ascii)))
     ))
-  (setq rime-user-data-dir "~/Library/Rime")
   ; emacs-rime with evil-escape
   (defun rime-evil-escape-advice (orig-fun key)
   "advice for `rime-input-method' to make it work together with `evil-escape'.
@@ -526,8 +494,6 @@
 ;; tab bar
 ;(load! "modules/ui/tabbar.el")
 
-;; org-journal
-(load! "modules/org/org-journal.el")
 
 ;; acutex and pdf-tools
 (load! "modules/latex/latex.el")

@@ -11,6 +11,7 @@ dotfiles:
   d_doom:
     src: config/doom
     dst: ~/.config/doom
+    chmod: '755'
   d_joshuto:
     src: config/joshuto
     dst: ~/.config/joshuto
@@ -39,3 +40,6 @@ profiles:
     - d_kitty
     - d_skhd
     - d_yabai
+  P16v:
+    dotfiles:
+    - d_doom
