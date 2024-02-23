@@ -50,10 +50,6 @@
 ;(unpin! t)
 
 
-; for org-roam
-(package! org-roam
-  :recipe (:host github :repo "org-roam/org-roam" :branch "main"))
-(package! org-roam-ui)
 (package! emacsql-sqlite-builtin)
 ; fuzzy finder
 (package! fzf)
@@ -89,7 +85,6 @@
 (package! cape)
 (package! kind-icon)
 
-(package! org-journal)
 
 ;; lsp-bridge
 ;(package! lsp-bridge
