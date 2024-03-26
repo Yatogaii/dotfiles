@@ -61,7 +61,7 @@
        (when (> level 0) (concat (org-roam-node-file-title node) " > "))
        (when (> level 1) (concat (string-join (org-roam-node-olp node) " > ") " > "))
        (org-roam-node-title node))))
-  (setq org-roam-node-display-template (concat "${type:15} ${hierarchy:*}" (propertize "${tags:10}" 'face 'org-tag)))
+  (setq org-roam-node-display-template (concat "${type:8} ${hierarchy:80}" (propertize "${tags:20}" 'face 'org-tag)))
 
   (defun jethro/tag-new-node-as-draft ()
     (org-roam-tag-add '("draft")))
@@ -92,6 +92,8 @@
                          :info (list :citekey (car keys-entries))
                          :node (org-roam-node-create :title title)
                          :props '(:finalize find-file)))))
+;; org-roam exclude
+(setq org-roam-file-exclude-regexp "\\(no-roam\\|daily\\)/")
 
 
 (defun yt/outline-left ()
@@ -150,3 +152,40 @@
 (after! counsel
   (setq counsel-outline-display-style 'title))
 (define-key org-mode-map (kbd "C-x n s") 'yt/my-org-narrow-to-subtree)
+
+
+(defvar my-last-code-reading-log-path nil
+  "Path of the last code reading log file opened.")
+
+(defun toggle-right-window-with-code-reading-log ()
+  "Toggle the right window to display a code reading log.
+   Allows dynamic selection of the log file based on the project.
+   Remembers the last file path selected."
+  (interactive)
+  (let ((current-window (selected-window))
+        (window-count (length (window-list)))
+        (file-path (or my-last-code-reading-log-path
+                       (read-file-name "Select code reading log file: " (concat)yt-org-base-dir "/no-roam"))))
+    ;; 更新最后一次选择的文件路径
+    (setq my-last-code-reading-log-path file-path)
+    ;; 打开或获取文件的buffer
+    (let ((target-buffer (find-file-noselect file-path)))
+      ;; 根据窗口数量执行操作
+      (cond
+       ((= window-count 2)
+        (let ((right-window (window-in-direction 'right)))
+          (when right-window
+            (if (equal (window-buffer right-window) target-buffer)
+                (delete-window right-window)
+              (set-window-buffer right-window target-buffer))
+            (when (equal current-window right-window)
+              (select-window (window-in-direction 'left))))))
+       ((= window-count 1)
+        (let ((new-window (split-window-right)))
+          (select-window new-window)
+          (set-window-buffer new-window target-buffer)))
+       (t nil)))))
+
+(map! :leader
+      :desc "Toggle right window"
+      "w c" #'toggle-right-window-with-code-reading-log)

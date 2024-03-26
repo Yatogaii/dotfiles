@@ -60,9 +60,6 @@
 (setq org-startup-indented t)
 (setq org-odd-levels-only nil)
 
-; map jk to esc
-(setq-default evil-escape-key-sequence "jk")
-
 ;; org-roam-config
 
 ;; my new function
